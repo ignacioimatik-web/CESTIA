@@ -129,7 +129,12 @@ export class MercadonaProvider {
         .select('id, name, display_order')
         .eq('supermarket_id', MERCADONA_ID)
         .order('display_order', { ascending: true })
-      return (data ?? []).map((c) => ({ id: c.id, name: c.name, order: c.display_order }))
+      return (data ?? []).map((c) => ({
+        id: c.id,
+        name: c.name,
+        order: c.display_order,
+        childCategoryIds: [],
+      }))
     }
   }
 
