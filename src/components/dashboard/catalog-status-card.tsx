@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import type { CatalogStatus } from './types'
+import { CatalogSyncButton } from './catalog-sync-button'
 
 export function CatalogStatusCard({ status }: { status: CatalogStatus }) {
   return (
@@ -13,9 +13,7 @@ export function CatalogStatusCard({ status }: { status: CatalogStatus }) {
         <p><span className="text-muted-foreground">Productos guardados:</span> {status.productCount}</p>
         <p><span className="text-muted-foreground">Categorias guardadas:</span> {status.categoryCount}</p>
         <p><span className="text-muted-foreground">Imagenes disponibles:</span> {status.imagesCount}</p>
-        <Button className="h-10 w-full" disabled={!status.canSync} title={status.canSync ? '' : 'Solo admin o entorno desarrollo'}>
-          Sincronizar catalogo
-        </Button>
+        <CatalogSyncButton canSync={status.canSync} />
       </CardContent>
     </Card>
   )

@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/server'
 import { DashboardHero } from '@/components/dashboard/dashboard-hero'
 import { ShoppingEnginePanel } from '@/components/dashboard/shopping-engine-panel'
 import { HouseholdSummaryCard } from '@/components/dashboard/household-summary-card'
-import { RecipeCategoryRail } from '@/components/dashboard/recipe-category-rail'
 import { FeaturedRecipes } from '@/components/dashboard/featured-recipes'
 import { ActiveShoppingListCard } from '@/components/dashboard/active-shopping-list-card'
 import { SupermarketSectionsGrid } from '@/components/dashboard/supermarket-sections-grid'
@@ -103,6 +102,11 @@ export default async function DashboardPage() {
     pendingItems,
     checkedItems,
     sections: Array.from(sectionSummaryMap.entries()).map(([name, count]) => ({ name, count })),
+    previewItems: activeListItems.slice(0, 4).map((item) => ({
+      name: item.name,
+      section: item.section,
+      imageUrl: item.matched_product?.image_url ?? null,
+    })),
   } : null
 
   const recipeIngs = (recipeIngRes.data ?? []) as RecipeIngredientRow[]
@@ -188,26 +192,30 @@ export default async function DashboardPage() {
         estimatedCost,
       }} />
 
-      <ShoppingEnginePanel />
+      <div>
+        <Link href="/shopping-lists/new" className="inline-flex">
+          <Button className="h-12 rounded-xl px-6 text-base">Crear lista</Button>
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <HouseholdSummaryCard summary={householdSummary} />
+        <ShoppingEnginePanel />
         <ActiveShoppingListCard list={activeListSummary} />
       </div>
 
-      <RecipeCategoryRail />
-
-      <FeaturedRecipes recipes={featuredRecipes} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <HouseholdSummaryCard summary={householdSummary} />
+        <FeaturedRecipes recipes={featuredRecipes} />
+      </div>
 
       <SupermarketSectionsGrid sections={sections} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <SuggestedProductsPanel products={suggestedProducts} />
-        <CatalogStatusCard status={catalogStatus} />
-      </div>
-
       <QuickEventsPanel />
       <SmartTemplatesPanel />
+
+      <CatalogStatusCard status={catalogStatus} />
+
+      <SuggestedProductsPanel products={suggestedProducts} />
     </div>
   )
 }

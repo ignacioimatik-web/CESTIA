@@ -23,6 +23,10 @@ export default function NewShoppingListPage() {
   const [selectedRecipes, setSelectedRecipes] = useState<RecipeForList[]>([])
   const [recipeServings, setRecipeServings] = useState<Record<string, number>>({})
   const [preferences, setPreferences] = useState<Record<string, string | null>>({})
+  const [template] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null
+    return new URLSearchParams(window.location.search).get('template')
+  })
 
   useEffect(() => {
     Promise.all([
@@ -46,11 +50,9 @@ export default function NewShoppingListPage() {
 
     setSelectedRecipes(rfl)
     setRecipeServings(servings)
-    setListName(
-      selected.length === 1
-        ? `Compra: ${selected[0].recipe.name}`
-        : `Compra (${selected.length} recetas)`
-    )
+    setListName(template ?? (selected.length === 1
+      ? `Compra: ${selected[0].recipe.name}`
+      : `Compra (${selected.length} recetas)`))
     setStep('review')
   }
 
@@ -85,6 +87,9 @@ export default function NewShoppingListPage() {
         <p className="text-sm text-muted-foreground mb-6">
           Selecciona las recetas para generar la lista
         </p>
+        {template && (
+          <p className="text-xs text-primary mb-4">Plantilla seleccionada: {template}</p>
+        )}
         {loadingRecipes ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (

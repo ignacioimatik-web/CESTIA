@@ -33,6 +33,7 @@ export type ActiveListSummary = {
   pendingItems: number
   checkedItems: number
   sections: { name: string; count: number }[]
+  previewItems: { name: string; section: string | null; imageUrl: string | null }[]
 }
 
 export type SectionStat = {

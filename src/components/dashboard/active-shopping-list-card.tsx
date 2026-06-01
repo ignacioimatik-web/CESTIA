@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getProgress } from './helpers'
 import type { ActiveListSummary } from './types'
+import { ActiveShoppingListItemPreview } from './active-shopping-list-item-preview'
 
 export function ActiveShoppingListCard({ list }: { list: ActiveListSummary | null }) {
   if (!list) {
@@ -27,6 +28,13 @@ export function ActiveShoppingListCard({ list }: { list: ActiveListSummary | nul
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden"><div className="h-full bg-primary" style={{ width: `${progress}%` }} /></div>
         <p className="text-xs text-muted-foreground">{list.checkedItems} comprados · {list.pendingItems} pendientes</p>
+        {list.previewItems.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {list.previewItems.map((item, idx) => (
+              <ActiveShoppingListItemPreview key={`${item.name}-${idx}`} item={item} />
+            ))}
+          </div>
+        )}
         <div className="flex flex-wrap gap-1">{list.sections.slice(0, 5).map((s) => <span key={s.name} className="text-[10px] px-2 py-1 rounded-full bg-muted">{s.name} ({s.count})</span>)}</div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <Link href={`/shopping-lists/${list.id}`}><Button className="h-10 w-full">Abrir lista</Button></Link>

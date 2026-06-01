@@ -21,7 +21,7 @@ export function SmartTemplatesPanel() {
         {templates.map((template) => (
           <div key={template} className="warm-surface rounded-xl p-3 flex items-center justify-between gap-2">
             <p className="text-sm font-medium">{template}</p>
-            <Link href="/shopping-lists/new"><Button size="sm" className="h-9">Usar</Button></Link>
+            <Link href={`/shopping-lists/new?template=${encodeURIComponent(template)}`}><Button size="sm" className="h-9">Usar</Button></Link>
           </div>
         ))}
       </CardContent>

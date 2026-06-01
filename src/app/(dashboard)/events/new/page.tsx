@@ -44,6 +44,21 @@ export default function NewEventPage() {
     getRecipesForEvent().then(setRecipes)
   }, [])
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const template = params.get('template')
+    const adultsParam = params.get('adults')
+    const childrenParam = params.get('children')
+    if (!template) return
+
+    queueMicrotask(() => {
+      setName(template)
+      setAdults(adultsParam ? Math.max(0, Number(adultsParam) || 0) : 2)
+      setChildren(childrenParam ? Math.max(0, Number(childrenParam) || 0) : 0)
+      setStep('details')
+    })
+  }, [])
+
   function selectType(type: string) {
     const config = getEventType(type)
     setEventType(type)
