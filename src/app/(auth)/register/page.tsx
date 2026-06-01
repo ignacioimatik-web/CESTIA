@@ -19,14 +19,26 @@ import { toast } from 'sonner'
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [pendingConfirmation, setPendingConfirmation] = useState(false)
   const router = useRouter()
   const supabase = createClient()
   const normalizedEmail = email.trim().toLowerCase()
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (displayName.trim().length < 2) {
+      toast.error('Introduce un nombre valido')
+      return
+    }
+    if (password !== confirmPassword) {
+      toast.error('Las contrasenas no coinciden')
+      return
+    }
+
     setLoading(true)
 
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -34,6 +46,7 @@ export default function RegisterPage() {
       password,
       options: {
         data: { display_name: displayName },
+        emailRedirectTo: `${window.location.origin}/login`,
       },
     })
 
@@ -44,11 +57,41 @@ export default function RegisterPage() {
     }
 
     if (authData.user) {
-      toast.success('Cuenta creada. Revisa tu email para confirmar la cuenta si es necesario.')
-      router.push('/login')
+      if (authData.session) {
+        toast.success('Cuenta creada. Bienvenido!')
+        router.push('/dashboard')
+        router.refresh()
+      } else {
+        setPendingConfirmation(true)
+        toast.success('Cuenta creada. Revisa tu email para confirmar la cuenta.')
+      }
     }
 
     setLoading(false)
+  }
+
+  const handleResendConfirmation = async () => {
+    if (!normalizedEmail) {
+      toast.error('Escribe tu email primero')
+      return
+    }
+
+    setResending(true)
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: normalizedEmail,
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+      },
+    })
+    setResending(false)
+
+    if (error) {
+      toast.error(error.message)
+      return
+    }
+
+    toast.success('Email de confirmacion reenviado')
   }
 
   return (
@@ -97,10 +140,32 @@ export default function RegisterPage() {
               minLength={6}
             />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+            />
+          </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Creando...' : 'Crear cuenta'}
           </Button>
         </form>
+        {pendingConfirmation && (
+          <button
+            type="button"
+            onClick={handleResendConfirmation}
+            disabled={resending}
+            className="mt-3 w-full text-center text-sm text-primary hover:underline disabled:opacity-60"
+          >
+            {resending ? 'Reenviando...' : 'No llego el correo? Reenviar confirmacion'}
+          </button>
+        )}
         <p className="mt-4 text-center text-sm text-muted-foreground">
           ¿Ya tienes cuenta?{' '}
           <Link href="/login" className="text-primary hover:underline">
