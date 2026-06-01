@@ -19,7 +19,7 @@ import { toast } from 'sonner'
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
+  const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
@@ -32,7 +32,7 @@ export default function RegisterPage() {
       email,
       password,
       options: {
-        data: { full_name: name },
+        data: { display_name: displayName },
       },
     })
 
@@ -43,16 +43,29 @@ export default function RegisterPage() {
     }
 
     if (authData.user) {
-      const { error: householdError } = await supabase.from('households').insert({
-        name: `Hogar de ${name}`,
-        adults: 2,
-        children: 0,
-        dietary_preferences: ['none'],
-        favorite_supermarket: 'mercadona',
-      })
+      // The profile is auto-created by the on_auth_user_created trigger.
+      // Create a default household for the new user.
+      const { data: household, error: householdError } = await supabase
+        .from('households')
+        .insert({ name: `Hogar de ${displayName}`, adults: 2, young_children: 0, teenagers: 0, frequent_guests: 0, dietary_restrictions: [], preferences: [] } as any)
+        .select('id')
+        .single()
 
       if (householdError) {
         toast.error('Error al crear el hogar')
+        setLoading(false)
+        return
+      }
+
+      // Add user as admin member of the household
+      const { error: memberError } = await supabase.from('household_members').insert({
+        household_id: household.id,
+        user_id: authData.user.id,
+        role: 'admin',
+      })
+
+      if (memberError) {
+        toast.error('Error al añadirte al hogar')
         setLoading(false)
         return
       }
@@ -78,12 +91,12 @@ export default function RegisterPage() {
       <CardContent>
         <form onSubmit={handleRegister} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nombre del hogar</Label>
+            <Label htmlFor="name">Nombre</Label>
             <Input
               id="name"
-              placeholder="Ej: Hogar de Ana"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="Tu nombre"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
               required
             />
           </div>

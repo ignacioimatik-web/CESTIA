@@ -3,6 +3,7 @@
 import { useAuth } from '@/hooks/use-auth'
 import { cn } from '@/lib/utils'
 import {
+  Calendar,
   ClipboardList,
   CookingPot,
   Home,
@@ -22,6 +23,7 @@ import { Separator } from '@/components/ui/separator'
 
 const navItems = [
   { href: '/dashboard', label: 'Inicio', icon: Home },
+  { href: '/events', label: 'Eventos', icon: Calendar },
   { href: '/recipes', label: 'Recetas', icon: CookingPot },
   { href: '/shopping-lists', label: 'Lista de Compra', icon: ShoppingCart },
   { href: '/household', label: 'Mi Hogar', icon: ClipboardList },
@@ -34,14 +36,17 @@ export function DesktopSidebar() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-30">
-      <div className="flex flex-col flex-1 border-r bg-background">
-        <div className="flex items-center gap-2 h-14 px-6 border-b">
-          <span className="text-xl">🛒</span>
-          <span className="font-semibold text-base">Cesta Inteligente</span>
+    <aside className="hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-30 p-4">
+      <div className="flex flex-col flex-1 warm-panel overflow-hidden">
+        <div className="flex items-center gap-2.5 h-16 px-6 border-b border-border/60">
+          <span className="text-2xl">🧺</span>
+          <div>
+            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Plan semanal</p>
+            <span className="font-semibold text-base">Cesta Inteligente</span>
+          </div>
         </div>
 
-        <nav className="flex-1 flex flex-col gap-1 p-4">
+        <nav className="flex-1 flex flex-col gap-1.5 p-4">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href)
             return (
@@ -49,10 +54,10 @@ export function DesktopSidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                  'flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    ? 'bg-primary/95 text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 )}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
@@ -62,12 +67,12 @@ export function DesktopSidebar() {
           })}
         </nav>
 
-        <div className="p-4 border-t">
-          <div className="flex items-center gap-3 px-3 py-2">
+        <div className="p-4 border-t border-border/60">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/40">
             <Button
               variant="ghost"
               size="icon"
-              className="shrink-0"
+              className="shrink-0 rounded-xl"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
               <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -82,7 +87,7 @@ export function DesktopSidebar() {
             <div className="flex-1 min-w-0">
               <p className="text-sm truncate">{user?.email ?? 'Usuario'}</p>
             </div>
-            <Button variant="ghost" size="icon" className="shrink-0" onClick={signOut}>
+            <Button variant="ghost" size="icon" className="shrink-0 rounded-xl" onClick={signOut}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>

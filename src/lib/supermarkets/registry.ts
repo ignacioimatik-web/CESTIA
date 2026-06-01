@@ -11,9 +11,18 @@ class SupermarketRegistry {
   get(name: string): SupermarketProvider {
     const provider = this.providers.get(name)
     if (!provider) {
-      throw new Error(`Supermarket provider "${name}" not found`)
+      throw new Error(`Supermarket provider "${name}" not found. Available: ${Array.from(this.providers.keys()).join(', ')}`)
     }
     return provider
+  }
+
+  getById(supermarketId: string): SupermarketProvider | undefined {
+    for (const provider of this.providers.values()) {
+      if (provider.config.externalId === supermarketId) {
+        return provider
+      }
+    }
+    return undefined
   }
 
   getAll(): SupermarketProvider[] {
@@ -30,3 +39,20 @@ class SupermarketRegistry {
 }
 
 export const supermarketRegistry = new SupermarketRegistry()
+
+// Auto-register on first import
+export function initProviders(): void {
+  if (supermarketRegistry.has('mercadona')) return
+
+  const { registerMercadona } = require('./mercadona')
+  const { registerLidl } = require('./lidl')
+  const { registerAldi } = require('./aldi')
+  const { registerDia } = require('./dia')
+  const { registerFamilyCash } = require('./family-cash')
+
+  registerMercadona()
+  registerLidl()
+  registerAldi()
+  registerDia()
+  registerFamilyCash()
+}

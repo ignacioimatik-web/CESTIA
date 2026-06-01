@@ -1,3 +1,32 @@
+export interface SupermarketConfig {
+  name: string
+  displayName: string
+  logoUrl: string | null
+  color: string | null
+  website: string | null
+  enabled: boolean
+  externalId: string
+}
+
+export interface SupermarketInfo {
+  id: string
+  name: string
+  displayName: string
+  logoUrl: string | null
+  color: string | null
+  website: string | null
+  enabled: boolean
+  sectionCount: number
+  productCount: number
+  lastSync: string | null
+}
+
+export interface SupermarketSection {
+  id: string
+  name: string
+  displayOrder: number
+}
+
 export interface SupermarketProduct {
   id: string
   name: string
@@ -10,14 +39,24 @@ export interface SupermarketProduct {
   sectionDisplayOrder: number
   imageUrl: string | null
   ean: string | null
+  externalId: string | null
   isSeasonal: boolean
   lastUpdated: string
+  rawData: unknown | null
 }
 
-export interface SupermarketSection {
-  id: string
+export interface RawProduct {
+  externalId: string
   name: string
-  displayOrder: number
+  brand: string | null
+  price: number | null
+  unit: string | null
+  quantity: number | null
+  imageUrl: string | null
+  ean: string | null
+  categories: string[]
+  isSeasonal: boolean
+  rawData: unknown
 }
 
 export interface SearchProductsParams {
@@ -33,10 +72,15 @@ export interface SearchProductsResult {
   pageSize: number
 }
 
-export interface SupermarketConfig {
-  name: string
-  displayName: string
-  logoUrl: string
-  color: string
-  enabled: boolean
+export interface SyncResult {
+  synced: number
+  updated: number
+  failed: number
+  errors: string[]
+  totalApiRequests: number
+  categoriesProcessed: number
+  productsFetched: number
+  durationMs: number
 }
+
+export type ExternalProductId = string

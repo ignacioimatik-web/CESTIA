@@ -32,18 +32,22 @@ export function ShoppingListCard({
   return (
     <Card
       className={cn(
-        'transition-all hover:border-primary/50 hover:shadow-sm',
+        'card-hover border shadow-sm overflow-hidden',
         isCompleted && 'opacity-60',
         className
       )}
     >
+      <div className={cn(
+        'h-1',
+        progress === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-amber-400 to-orange-500'
+      )} />
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <CardTitle className="text-base flex items-center gap-2">
               {name}
               {isCompleted && (
-                <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
               )}
             </CardTitle>
           </div>
@@ -65,8 +69,8 @@ export function ShoppingListCard({
         <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
           <div
             className={cn(
-              'h-full rounded-full transition-all',
-              progress === 100 ? 'bg-green-500' : 'bg-primary'
+              'h-full rounded-full transition-all duration-500',
+              progress === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-amber-400 to-orange-500'
             )}
             style={{ width: `${progress}%` }}
           />
