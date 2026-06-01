@@ -43,34 +43,7 @@ export default function RegisterPage() {
     }
 
     if (authData.user) {
-      // The profile is auto-created by the on_auth_user_created trigger.
-      // Create a default household for the new user.
-      const { data: household, error: householdError } = await supabase
-        .from('households')
-        .insert({ name: `Hogar de ${displayName}`, adults: 2, young_children: 0, teenagers: 0, frequent_guests: 0, dietary_restrictions: [], preferences: [] } as any)
-        .select('id')
-        .single()
-
-      if (householdError) {
-        toast.error('Error al crear el hogar')
-        setLoading(false)
-        return
-      }
-
-      // Add user as admin member of the household
-      const { error: memberError } = await supabase.from('household_members').insert({
-        household_id: household.id,
-        user_id: authData.user.id,
-        role: 'admin',
-      })
-
-      if (memberError) {
-        toast.error('Error al añadirte al hogar')
-        setLoading(false)
-        return
-      }
-
-      toast.success('Cuenta creada. Bienvenido a Cesta Inteligente!')
+      toast.success('Cuenta creada. Revisa tu email para confirmar la cuenta si es necesario.')
       router.push('/login')
     }
 

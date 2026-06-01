@@ -25,6 +25,7 @@ type ItemRowProps = {
   onDelete: (id: string) => void
   onChangeSection: (id: string, section: string) => void
   onMatchChange: (itemId: string) => void
+  checklistMode?: boolean
 }
 
 export function ItemRow({
@@ -35,6 +36,7 @@ export function ItemRow({
   onDelete,
   onChangeSection,
   onMatchChange,
+  checklistMode = false,
 }: ItemRowProps) {
   const [editing, setEditing] = useState(false)
   const [qty, setQty] = useState(String(item.quantity))
@@ -162,18 +164,20 @@ export function ItemRow({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              'h-8 w-8',
-              item.isOwned ? 'text-amber-500' : 'text-muted-foreground hover:text-foreground'
-            )}
-            onClick={() => onToggleOwned(item.id, !item.isOwned)}
-            title={item.isOwned ? 'Ya lo tengo' : 'Marcar como poseído'}
-          >
-            <ShoppingBag className="h-4 w-4" />
-          </Button>
+          {!checklistMode && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                'h-8 w-8',
+                item.isOwned ? 'text-amber-500' : 'text-muted-foreground hover:text-foreground'
+              )}
+              onClick={() => onToggleOwned(item.id, !item.isOwned)}
+              title={item.isOwned ? 'Ya lo tengo' : 'Marcar como poseido'}
+            >
+              <ShoppingBag className="h-4 w-4" />
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"

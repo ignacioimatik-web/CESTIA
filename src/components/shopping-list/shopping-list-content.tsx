@@ -28,18 +28,51 @@ import {
 type ShoppingListData = Awaited<ReturnType<typeof getShoppingList>>
 
 export function ShoppingListContent({ id }: { id: string }) {
+  const cacheKey = `cestia:list:${id}`
   const router = useRouter()
   const [data, setData] = useState<ShoppingListData>(null)
   const [loading, setLoading] = useState(true)
   const [newItemName, setNewItemName] = useState('')
+  const [isOffline, setIsOffline] = useState(false)
+  const [checklistMode, setChecklistMode] = useState(true)
 
   const fetchList = useCallback(async () => {
-    const result = await getShoppingList(id)
-    setData(result)
-    setLoading(false)
-  }, [id])
+    try {
+      const result = await getShoppingList(id)
+      setData(result)
+      if (typeof window !== 'undefined' && result) {
+        window.localStorage.setItem(cacheKey, JSON.stringify(result))
+      }
+    } catch {
+      if (typeof window !== 'undefined') {
+        const cached = window.localStorage.getItem(cacheKey)
+        if (cached) {
+          setData(JSON.parse(cached))
+          setIsOffline(true)
+        }
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [id, cacheKey])
 
   useEffect(() => { fetchList() }, [fetchList])
+
+  useEffect(() => {
+    const syncOnlineState = () => setIsOffline(!navigator.onLine)
+    syncOnlineState()
+    window.addEventListener('online', syncOnlineState)
+    window.addEventListener('offline', syncOnlineState)
+    return () => {
+      window.removeEventListener('online', syncOnlineState)
+      window.removeEventListener('offline', syncOnlineState)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!data || typeof window === 'undefined') return
+    window.localStorage.setItem(cacheKey, JSON.stringify(data))
+  }, [data, cacheKey])
 
   if (loading) {
     return (
@@ -85,7 +118,6 @@ export function ShoppingListContent({ id }: { id: string }) {
   }
 
   async function handleToggleCheck(itemId: string, checked: boolean) {
-    await toggleItemChecked(itemId, checked)
     setData((prev) => {
       if (!prev) return prev
       return {
@@ -95,10 +127,14 @@ export function ShoppingListContent({ id }: { id: string }) {
         ),
       }
     })
+    try {
+      await toggleItemChecked(itemId, checked)
+    } catch {
+      setIsOffline(true)
+    }
   }
 
   async function handleToggleOwned(itemId: string, owned: boolean) {
-    await toggleItemOwned(itemId, owned)
     setData((prev) => {
       if (!prev) return prev
       return {
@@ -108,10 +144,14 @@ export function ShoppingListContent({ id }: { id: string }) {
         ),
       }
     })
+    try {
+      await toggleItemOwned(itemId, owned)
+    } catch {
+      setIsOffline(true)
+    }
   }
 
   async function handleUpdateQuantity(itemId: string, quantity: number) {
-    await updateItemQuantity(itemId, quantity)
     setData((prev) => {
       if (!prev) return prev
       return {
@@ -121,11 +161,14 @@ export function ShoppingListContent({ id }: { id: string }) {
         ),
       }
     })
+    try {
+      await updateItemQuantity(itemId, quantity)
+    } catch {
+      setIsOffline(true)
+    }
   }
 
   async function handleChangeSection(itemId: string, section: string) {
-    await updateItemSection(itemId, section)
-    await saveUserSectionPreference({ ingredientId: null, productId: null, section })
     setData((prev) => {
       if (!prev) return prev
       return {
@@ -135,6 +178,12 @@ export function ShoppingListContent({ id }: { id: string }) {
         ),
       }
     })
+    try {
+      await updateItemSection(itemId, section)
+      await saveUserSectionPreference({ ingredientId: null, productId: null, section })
+    } catch {
+      setIsOffline(true)
+    }
   }
 
   async function handleDeleteItem(itemId: string) {
@@ -176,6 +225,11 @@ export function ShoppingListContent({ id }: { id: string }) {
     <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-3xl mx-auto">
       {/* Header */}
       <FadeIn>
+        {isOffline && (
+          <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+            Sin conexion: trabajando con cache local. Tus cambios se mantienen en este dispositivo.
+          </div>
+        )}
         <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
           <div className="min-w-0">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">{data.name}</h1>
@@ -186,6 +240,14 @@ export function ShoppingListContent({ id }: { id: string }) {
             </p>
           </div>
           <div className="flex items-center gap-1.5">
+            <Button
+              variant={checklistMode ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setChecklistMode((v) => !v)}
+              className="h-10 rounded-xl"
+            >
+              Modo checklist
+            </Button>
             <ExportActions
               listName={data.name}
               supermarketName={null}
@@ -196,7 +258,7 @@ export function ShoppingListContent({ id }: { id: string }) {
               variant={data.isCompleted ? 'outline' : 'default'}
               size="sm"
               onClick={handleComplete}
-              className="rounded-lg"
+              className="rounded-xl h-10"
             >
               <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" />
               {data.isCompleted ? 'Reabrir' : 'Completar'}
@@ -236,13 +298,13 @@ export function ShoppingListContent({ id }: { id: string }) {
               value={newItemName}
               onChange={(e) => setNewItemName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-              className="pl-10 rounded-xl h-11"
+              className="pl-10 rounded-xl h-12 text-base"
             />
           </div>
           <Button
             onClick={handleAddItem}
             disabled={!newItemName.trim()}
-            className="rounded-xl h-11"
+            className="rounded-xl h-12 px-5 text-base"
           >
             <Plus className="h-4 w-4 mr-1" />
             Añadir
@@ -297,6 +359,7 @@ export function ShoppingListContent({ id }: { id: string }) {
                         onDelete={handleDeleteItem}
                         onChangeSection={handleChangeSection}
                         onMatchChange={fetchList}
+                        checklistMode={checklistMode}
                       />
                     </StaggerItem>
                   ))}

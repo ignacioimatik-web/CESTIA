@@ -2,20 +2,34 @@
   "name": "Cesta Inteligente",
   "short_name": "Cesta",
   "description": "Convierte tus recetas en listas de compra inteligentes",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#fff8ef",
+  "theme_color": "#f59e0b",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/icon?size=192",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon?size=512",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Crear lista",
+      "short_name": "Crear lista",
+      "url": "/shopping-lists/new"
+    },
+    {
+      "name": "Ir a la compra",
+      "short_name": "Compra",
+      "url": "/shopping-lists"
     }
   ]
 }
