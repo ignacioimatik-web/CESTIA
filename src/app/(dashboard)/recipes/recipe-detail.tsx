@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ServingsSelector } from '@/components/recipes/servings-selector'
-import { FadeIn, StaggerList, StaggerItem } from '@/components/shared/animations'
+import { FadeIn } from '@/components/shared/animations'
 import {
   Clock, Users, ChefHat, Pencil, Trash2, ArrowLeft,
   Globe, Lock, AlertTriangle, CookingPot, ShoppingCart,

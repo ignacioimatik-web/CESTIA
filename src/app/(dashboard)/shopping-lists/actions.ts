@@ -66,6 +66,41 @@ export type ShoppingListItemData = {
   } | null
 }
 
+type RawShoppingListItem = {
+  id: string
+  name: string
+  quantity: number
+  unit: string
+  section: string | null
+  is_checked: boolean
+  is_owned: boolean
+  recipe_sources: string[] | null
+  notes: string | null
+  sort_order: number
+  matched_product_id: string | null
+  match_type: string | null
+  matched_product: {
+    id: string
+    name: string
+    brand: string | null
+    price: number | null
+    unit: string
+    quantity: number | null
+    image_url: string | null
+  } | null
+}
+
+type RawSupermarketProduct = {
+  id: string
+  name: string
+  brand: string | null
+  price: number | null
+  unit: string
+  quantity: number | null
+  image_url: string | null
+  supermarket_section: { name: string | null } | null
+}
+
 export async function getShoppingList(id: string) {
   const supabase = await createClient()
 
@@ -83,7 +118,7 @@ export async function getShoppingList(id: string) {
     .eq('shopping_list_id', id)
     .order('sort_order', { ascending: true })
 
-  const items = (rawItems ?? []) as any[]
+  const items = (rawItems ?? []) as RawShoppingListItem[]
 
   return {
     id: list.id,
@@ -154,7 +189,7 @@ export async function createShoppingList(data: {
       supermarket_id: data.supermarketId ?? null,
       notes: null,
       is_completed: false,
-    } as any)
+    } as never)
     .select('id')
     .single()
 
@@ -177,7 +212,7 @@ export async function createShoppingList(data: {
           notes: null,
           is_checked: false,
           is_owned: false,
-        } as any))
+        } as never))
       )
 
     if (itemsError) throw new Error(itemsError.message)
@@ -220,7 +255,7 @@ export async function toggleItemChecked(id: string, checked: boolean) {
 
   const { error } = await supabase
     .from('shopping_list_items')
-    .update({ is_checked: checked } as any)
+    .update({ is_checked: checked } as never)
     .eq('id', id)
 
   if (error) throw new Error(error.message)
@@ -231,7 +266,7 @@ export async function toggleItemOwned(id: string, owned: boolean) {
 
   const { error } = await supabase
     .from('shopping_list_items')
-    .update({ is_owned: owned } as any)
+    .update({ is_owned: owned } as never)
     .eq('id', id)
 
   if (error) throw new Error(error.message)
@@ -242,7 +277,7 @@ export async function updateItemQuantity(id: string, quantity: number) {
 
   const { error } = await supabase
     .from('shopping_list_items')
-    .update({ quantity } as any)
+    .update({ quantity } as never)
     .eq('id', id)
 
   if (error) throw new Error(error.message)
@@ -253,7 +288,7 @@ export async function updateItemSection(id: string, section: string) {
 
   const { error } = await supabase
     .from('shopping_list_items')
-    .update({ section } as any)
+    .update({ section } as never)
     .eq('id', id)
 
   if (error) throw new Error(error.message)
@@ -293,7 +328,7 @@ export async function saveUserSectionPreference(data: {
       ingredient_id: data.ingredientId ?? null,
       product_id: data.productId ?? null,
       section: data.section,
-    } as any, {
+    } as never, {
       onConflict: 'user_id,ingredient_id,product_id',
     })
 
@@ -324,7 +359,7 @@ export async function searchProductsForIngredient(query: string) {
     .order('price', { ascending: true, nullsFirst: false })
     .limit(20)
 
-  const products = (rawProducts ?? []) as any[]
+  const products = (rawProducts ?? []) as RawSupermarketProduct[]
 
   const candidates: ProductCandidate[] = products.map((p) => ({
     id: p.id,
@@ -353,7 +388,7 @@ export async function selectProductForItem(
     .update({
       matched_product_id: productId,
       match_type: matchType,
-    } as any)
+    } as never)
     .eq('id', itemId)
 
   if (error) throw new Error(error.message)
@@ -367,7 +402,7 @@ export async function clearProductMatch(itemId: string) {
     .update({
       matched_product_id: null,
       match_type: null,
-    } as any)
+    } as never)
     .eq('id', itemId)
 
   if (error) throw new Error(error.message)
@@ -402,7 +437,7 @@ export async function addItem(
       notes: null,
       is_checked: false,
       is_owned: false,
-    } as any)
+    } as never)
 
   if (error) throw new Error(error.message)
   revalidatePath(`/shopping-lists/${shoppingListId}`)
@@ -417,7 +452,7 @@ export async function getRecipesForList() {
     .order('name')
 
   const recipeIds = (recipes ?? []).map((r) => r.id)
-  let ingredientMap: Record<string, { name: string; quantity: number; unit: string; optional: boolean; ingredientId: string }[]> = {}
+  const ingredientMap: Record<string, { name: string; quantity: number; unit: string; optional: boolean; ingredientId: string }[]> = {}
 
   if (recipeIds.length > 0) {
     const { data: ri } = await supabase
@@ -425,7 +460,7 @@ export async function getRecipesForList() {
       .select('recipe_id, ingredient_id, quantity, unit, optional')
 
     const ingIds = [...new Set((ri ?? []).map((r) => r.ingredient_id))]
-    let ingNames: Record<string, string> = {}
+    const ingNames: Record<string, string> = {}
 
     if (ingIds.length > 0) {
       const { data: names } = await supabase

@@ -65,7 +65,7 @@ export default async function DashboardPage() {
   const [householdRes, supermarketsRes, recentRecipesRes, allRecipesRes, favoriteRecipesRes, listsRes, eventRecipeRes] = await Promise.all([
     householdId
       ? supabase.from('households').select('*').eq('id', householdId).single()
-      : Promise.resolve({ data: null } as any),
+      : Promise.resolve({ data: null } as never),
     supabase.from('supermarkets').select('id, display_name').eq('enabled', true),
     supabase
       .from('recipes')
@@ -82,7 +82,7 @@ export default async function DashboardPage() {
         .from('household_favorite_recipes')
         .select('recipe:recipes(id, name, category)')
         .eq('household_id', householdId)
-      : Promise.resolve({ data: [] } as any),
+      : Promise.resolve({ data: [] } as never),
     supabase
       .from('shopping_lists')
       .select('id, name, is_completed, created_at')
@@ -93,7 +93,7 @@ export default async function DashboardPage() {
         .from('meal_event_recipes')
         .select('recipe_id, recipe:recipes(id, name, category), meal_event:meal_events!inner(household_id)')
         .eq('meal_event.household_id', householdId)
-      : Promise.resolve({ data: [] } as any),
+      : Promise.resolve({ data: [] } as never),
   ])
 
   const household = householdRes.data
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
       .from('shopping_list_items')
       .select('shopping_list_id, is_checked, quantity, matched_product:matched_product_id(price)')
       .in('shopping_list_id', listIds)
-    itemRows = (data ?? []) as any
+    itemRows = (data ?? []) as never
   }
 
   const pendingProducts = itemRows.filter((i) => !i.is_checked).length
@@ -124,8 +124,8 @@ export default async function DashboardPage() {
   const recentRecipes = recentRecipesRes.data ?? []
   const directFavorites = (allRecipesRes.data ?? []).filter((r) => r.is_favorite)
   const householdFavorites = (favoriteRecipesRes.data ?? [])
-    .map((f: any) => f.recipe)
-    .filter(Boolean)
+    .map((f: { recipe: { id: string; name: string; category: string | null } | null }) => f.recipe)
+    .filter((recipe): recipe is { id: string; name: string; category: string | null } => recipe !== null)
   const favoriteMap = new Map<string, { id: string; name: string; category: string | null }>()
   for (const recipe of [...householdFavorites, ...directFavorites]) {
     favoriteMap.set(recipe.id, recipe)
@@ -133,7 +133,10 @@ export default async function DashboardPage() {
   const favoriteRecipes = Array.from(favoriteMap.values()).slice(0, 4)
 
   const usageCount = new Map<string, { id: string; name: string; category: string | null; count: number }>()
-  for (const row of (eventRecipeRes.data ?? []) as any[]) {
+  const eventRecipeRows = (eventRecipeRes.data ?? []) as Array<{
+    recipe: { id: string; name: string; category: string | null } | null
+  }>
+  for (const row of eventRecipeRows) {
     const recipe = row.recipe
     if (!recipe) continue
     const prev = usageCount.get(recipe.id)

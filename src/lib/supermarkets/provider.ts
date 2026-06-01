@@ -5,7 +5,6 @@ import type {
   SupermarketSection,
   SupermarketProduct,
   RawProduct,
-  SearchProductsParams,
   SearchProductsResult,
   SyncResult,
   ExternalProductId,
@@ -158,7 +157,7 @@ export abstract class SupermarketProvider {
             ean: normalized.ean ?? raw.ean,
             is_seasonal: normalized.isSeasonal ?? raw.isSeasonal,
             raw_data: raw.rawData ?? null,
-          } as any, { onConflict: 'id' })
+          } as never, { onConflict: 'id' })
 
         if (error) {
           result.failed++
@@ -173,7 +172,7 @@ export abstract class SupermarketProvider {
     }
 
     if (result.synced > 0 || result.updated > 0) {
-      await admin.from('supermarkets').update({ last_synced_at: new Date().toISOString() } as any).eq('id', this.supermarketId)
+      await admin.from('supermarkets').update({ last_synced_at: new Date().toISOString() } as never).eq('id', this.supermarketId)
     }
 
     return result

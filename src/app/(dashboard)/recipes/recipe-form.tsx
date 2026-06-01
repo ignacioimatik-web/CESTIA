@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,7 +20,6 @@ import {
   updateRecipe,
   addRecipeIngredient,
   updateRecipeIngredient,
-  deleteRecipeIngredient,
   searchIngredients,
 } from './actions'
 import type { RecipeDetail, IngredientFormData } from './actions'

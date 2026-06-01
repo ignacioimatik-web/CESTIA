@@ -105,7 +105,7 @@ async function main(): Promise<void> {
         supermarket_id: MERCADONA_ID,
         name: cat.name,
         display_order: cat.order,
-      } as any, { onConflict: 'supermarket_id,name' })
+      } as never, { onConflict: 'supermarket_id,name' })
     }
     syncLogger.info('sync', `Upserted ${apiCategories.length} categories in database`)
   } else {
@@ -132,10 +132,8 @@ async function main(): Promise<void> {
   }
 
   // -- Step 3: Fetch products per category ------------------------------------
-  let allRawProducts: RawProduct[] = []
+  const allRawProducts: RawProduct[] = []
   let totalFetched = 0
-  let categoriesWithErrors = 0
-
   for (const cat of dbCategories) {
     syncLogger.info('sync', `Fetching products for category "${cat.name}"...`)
     const products = await fetchProductsByCategory(cat.id)

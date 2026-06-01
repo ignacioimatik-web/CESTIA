@@ -48,7 +48,7 @@ export class LidlProvider extends SupermarketProvider {
   }
 
   mapCategoryToInternalSection(rawCategory: string): string {
-    return 'Otros'
+    return rawCategory || 'Otros'
   }
 
   async syncProducts(): Promise<SyncResult> {

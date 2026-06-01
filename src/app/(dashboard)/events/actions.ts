@@ -117,7 +117,7 @@ export async function createEvent(data: {
       notes: data.notes ?? null,
       is_template: data.is_template ?? false,
       template_name: data.template_name ?? null,
-    } as any)
+    } as never)
     .select('id')
     .single()
 
@@ -132,7 +132,7 @@ export async function createEvent(data: {
           recipe_id: r.recipe_id,
           servings: r.servings,
           sort_order: i,
-        } as any))
+        } as never))
       )
     if (rErr) throw new Error(rErr.message)
   }
@@ -147,7 +147,7 @@ export async function createEvent(data: {
           quantity: p.quantity,
           unit: p.unit,
           sort_order: i,
-        } as any))
+        } as never))
       )
     if (pErr) throw new Error(pErr.message)
   }
@@ -193,7 +193,7 @@ export async function updateEvent(
             recipe_id: r.recipe_id,
             servings: r.servings,
             sort_order: i,
-          } as any))
+          } as never))
         )
       if (rErr) throw new Error(rErr.message)
     }
@@ -212,7 +212,7 @@ export async function updateEvent(
             quantity: p.quantity,
             unit: p.unit,
             sort_order: i,
-          } as any))
+          } as never))
         )
       if (pErr) throw new Error(pErr.message)
     }
@@ -257,11 +257,11 @@ export async function duplicateEvent(id: string) {
     adults: original.adults,
     children: original.children,
     notes: original.notes,
-    recipes: original.recipes.map((r: any) => ({
+    recipes: original.recipes.map((r: { recipe_id: string; servings: number }) => ({
       recipe_id: r.recipe_id,
       servings: r.servings,
     })),
-    extra_products: original.extraProducts.map((p: any) => ({
+    extra_products: original.extraProducts.map((p: { name: string; quantity: number; unit: string }) => ({
       name: p.name,
       quantity: p.quantity,
       unit: p.unit,
@@ -294,11 +294,11 @@ export async function saveAsTemplate(id: string, templateName: string) {
     notes: original.notes,
     is_template: true,
     template_name: templateName,
-    recipes: original.recipes.map((r: any) => ({
+    recipes: original.recipes.map((r: { recipe_id: string; servings: number }) => ({
       recipe_id: r.recipe_id,
       servings: r.servings,
     })),
-    extra_products: original.extraProducts.map((p: any) => ({
+    extra_products: original.extraProducts.map((p: { name: string; quantity: number; unit: string }) => ({
       name: p.name,
       quantity: p.quantity,
       unit: p.unit,
@@ -355,8 +355,6 @@ export async function generateShoppingListFromEvent(eventId: string) {
     })
   }
 
-  const totalGuests = event.adults + event.children
-
   const { data: list, error } = await supabase
     .from('shopping_lists')
     .insert({
@@ -366,7 +364,7 @@ export async function generateShoppingListFromEvent(eventId: string) {
       supermarket_id: null,
       notes: `Evento: ${event.name} (${event.adults} adultos, ${event.children} niños)`,
       is_completed: false,
-    } as any)
+    } as never)
     .select('id')
     .single()
 
@@ -389,7 +387,7 @@ export async function generateShoppingListFromEvent(eventId: string) {
           notes: null,
           is_checked: false,
           is_owned: false,
-        } as any))
+        } as never))
       )
 
     if (iErr) throw new Error(iErr.message)

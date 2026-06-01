@@ -12,36 +12,22 @@ import {
   Save,
   Loader2,
   Utensils,
-  Plus,
   CheckCircle2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { getEventType } from '@/lib/constants/event-types'
 import {
   deleteEvent,
   duplicateEvent,
   saveAsTemplate,
   generateShoppingListFromEvent,
-  getRecipesForEvent,
-  updateEvent,
 } from '../actions'
 
 type EventDetail = Awaited<ReturnType<typeof import('../actions').getEvent>>
@@ -161,7 +147,7 @@ export function EventDetailView({ event }: { event: NonNullable<EventDetail> }) 
               </p>
             ) : (
               <div className="space-y-2">
-                {event.recipes.map((r: any) => (
+                {event.recipes.map((r: { id: string; servings: number; recipe?: { name?: string | null; description?: string | null } | null }) => (
                   <div key={r.id} className="flex items-center justify-between text-sm py-2 border-b border-border/40 last:border-0">
                     <div className="min-w-0 flex-1">
                       <span className="font-medium truncate">{r.recipe?.name ?? 'Receta'}</span>
@@ -189,7 +175,7 @@ export function EventDetailView({ event }: { event: NonNullable<EventDetail> }) 
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
-                {event.extraProducts.map((p: any) => (
+                {event.extraProducts.map((p: { id: string; quantity: number; unit: string; name: string }) => (
                   <div key={p.id} className="flex items-center gap-2 text-sm py-1">
                     <span className="font-medium tabular-nums">{p.quantity}</span>
                     <span className="text-muted-foreground">{p.unit}</span>

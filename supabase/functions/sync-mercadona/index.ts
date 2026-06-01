@@ -128,7 +128,7 @@ Deno.serve(async (req: Request) => {
         supermarket_id: MERCADONA_ID,
         name: cat.name,
         display_order: cat.order,
-      } as any, { onConflict: 'supermarket_id,name' })
+      } as never, { onConflict: 'supermarket_id,name' })
     }
   }
 
@@ -156,7 +156,7 @@ Deno.serve(async (req: Request) => {
   }
 
   // -- Step 3: Fetch products per category ------------------------------------
-  let allRawProducts: RawProduct[] = []
+  const allRawProducts: RawProduct[] = []
   let totalFetched = 0
 
   for (const cat of dbCategories) {

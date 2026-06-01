@@ -168,7 +168,7 @@ export async function getRecipeById(id: string): Promise<RecipeDetail | null> {
     .eq('recipe_id', id)
 
   const ingredientIds = (ingredients ?? []).map((i) => i.ingredient_id)
-  let ingredientNames: Record<string, string> = {}
+  const ingredientNames: Record<string, string> = {}
 
   if (ingredientIds.length > 0) {
     const { data: names } = await supabase

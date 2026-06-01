@@ -250,7 +250,7 @@ export function HouseholdSettings() {
                 <p className="text-sm text-muted-foreground text-center py-4">Sin miembros</p>
               ) : (
                 <div className="space-y-1">
-                  {(data?.members ?? []).map((m: any) => {
+                  {(data?.members ?? []).map((m: { id: string; role: string; user?: { display_name?: string | null; id?: string } | null }) => {
                     const profile = m.user
                     return (
                       <div key={m.id} className="flex items-center gap-2 text-sm py-1.5 px-2 rounded-lg hover:bg-muted/50">
@@ -305,7 +305,7 @@ export function HouseholdSettings() {
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Frecuencia</Label>
-                <Select value={newProductFreq} onValueChange={(v: string | null) => setNewProductFreq((v ?? 'weekly') as any)}>
+                <Select value={newProductFreq} onValueChange={(v: string | null) => setNewProductFreq((v ?? 'weekly') as never)}>
                   <SelectTrigger className="h-9">
                     <SelectValue />
                   </SelectTrigger>
@@ -365,7 +365,7 @@ export function HouseholdSettings() {
               </p>
             ) : (
               <div className="space-y-1">
-                {(data?.favoriteRecipes ?? []).map((fr: any) => {
+                {(data?.favoriteRecipes ?? []).map((fr: { household_id: string; recipe_id: string; recipe?: { name?: string | null } | null }) => {
                   const recipe = fr.recipe
                   return (
                     <div key={`${fr.household_id}-${fr.recipe_id}`} className="flex items-center gap-2 text-sm py-1.5 px-2 rounded hover:bg-muted">

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { ArrowLeft, ShoppingCart, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -73,14 +74,13 @@ export default function NewShoppingListPage() {
   if (step === 'select-recipes') {
     return (
       <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-2xl mx-auto">
-        <a
+        <Link
           href="/shopping-lists"
           className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
-          onClick={(e) => { e.preventDefault(); router.push('/shopping-lists') }}
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Volver
-        </a>
+        </Link>
         <h1 className="text-xl font-semibold mb-1">Nueva lista de compra</h1>
         <p className="text-sm text-muted-foreground mb-6">
           Selecciona las recetas para generar la lista

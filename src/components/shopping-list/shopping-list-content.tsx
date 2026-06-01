@@ -56,7 +56,11 @@ export function ShoppingListContent({ id }: { id: string }) {
     }
   }, [id, cacheKey])
 
-  useEffect(() => { fetchList() }, [fetchList])
+  useEffect(() => {
+    queueMicrotask(() => {
+      void fetchList()
+    })
+  }, [fetchList])
 
   useEffect(() => {
     const syncOnlineState = () => setIsOffline(!navigator.onLine)

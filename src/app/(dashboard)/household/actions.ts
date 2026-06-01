@@ -129,7 +129,7 @@ export async function addUsualProduct(data: {
       unit: data.unit ?? 'ud',
       frequency: data.frequency ?? 'weekly',
       section: data.section ?? null,
-    } as any)
+    } as never)
 
   if (error) throw new Error(error.message)
   revalidatePath('/household')
@@ -140,7 +140,7 @@ export async function removeUsualProduct(id: string) {
 
   const { error } = await supabase
     .from('household_usual_products')
-    .update({ is_active: false } as any)
+    .update({ is_active: false } as never)
     .eq('id', id)
 
   if (error) throw new Error(error.message)
@@ -162,7 +162,7 @@ export async function addFavoriteRecipe(recipeId: string) {
 
   const { error } = await supabase
     .from('household_favorite_recipes')
-    .insert({ household_id: member.household_id, recipe_id: recipeId } as any)
+    .insert({ household_id: member.household_id, recipe_id: recipeId } as never)
 
   if (error && error.code !== '23505') throw new Error(error.message)
   revalidatePath('/household')

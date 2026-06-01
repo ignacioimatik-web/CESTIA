@@ -1,5 +1,10 @@
 import { SupermarketProvider } from './provider'
 import type { SupermarketConfig } from './types'
+import { registerMercadona } from './mercadona'
+import { registerLidl } from './lidl'
+import { registerAldi } from './aldi'
+import { registerDia } from './dia'
+import { registerFamilyCash } from './family-cash'
 
 class SupermarketRegistry {
   private providers = new Map<string, SupermarketProvider>()
@@ -43,12 +48,6 @@ export const supermarketRegistry = new SupermarketRegistry()
 // Auto-register on first import
 export function initProviders(): void {
   if (supermarketRegistry.has('mercadona')) return
-
-  const { registerMercadona } = require('./mercadona')
-  const { registerLidl } = require('./lidl')
-  const { registerAldi } = require('./aldi')
-  const { registerDia } = require('./dia')
-  const { registerFamilyCash } = require('./family-cash')
 
   registerMercadona()
   registerLidl()

@@ -55,7 +55,7 @@ export class MercadonaProvider extends SupermarketProvider {
   async getSupermarketInfo(): Promise<SupermarketInfo> {
     const admin = createAdminClient()
 
-    const { data: dbSuper } = await admin
+    await admin
       .from('supermarkets')
       .select('*')
       .eq('id', this.supermarketId)
@@ -101,7 +101,7 @@ export class MercadonaProvider extends SupermarketProvider {
         supermarket_id: this.supermarketId,
         name: cat.name,
         display_order: cat.order,
-      } as any, { onConflict: 'supermarket_id,name' })
+      } as never, { onConflict: 'supermarket_id,name' })
     }
 
     const { data } = await admin
@@ -133,7 +133,7 @@ export class MercadonaProvider extends SupermarketProvider {
       return { synced: 0, updated: 0, failed: 0, errors: ['No categories found. Run syncCategories first.'], totalApiRequests: 0, categoriesProcessed: 0, productsFetched: 0, durationMs: 0 }
     }
 
-    let allProducts: RawProduct[] = []
+    const allProducts: RawProduct[] = []
 
     for (const cat of categories) {
       const apiProducts = await api.fetchProductsByCategory(cat.id)

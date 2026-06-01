@@ -45,7 +45,7 @@ export class FamilyCashProvider extends SupermarketProvider {
 
   async syncCategories(): Promise<SupermarketSection[]> { return [] }
 
-  mapCategoryToInternalSection(rawCategory: string): string { return 'Otros' }
+  mapCategoryToInternalSection(rawCategory: string): string { return rawCategory || 'Otros' }
 
   async syncProducts(): Promise<SyncResult> {
     return { synced: 0, updated: 0, failed: 0, errors: ['FamilyCash provider: not yet implemented'], totalApiRequests: 0, categoriesProcessed: 0, productsFetched: 0, durationMs: 0 }

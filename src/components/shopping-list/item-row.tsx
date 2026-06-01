@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, ShoppingBag, Trash2, ChevronDown, GripVertical } from 'lucide-react'
+import { Check, ShoppingBag, Trash2, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -67,7 +67,9 @@ export function ItemRow({
     >
       {/* Check button */}
       <button
+        type="button"
         onClick={() => onToggleCheck(item.id, !item.isChecked)}
+        aria-label={item.isChecked ? 'Desmarcar producto' : 'Marcar producto'}
         className={cn(
           'w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200',
           item.isChecked
@@ -174,6 +176,7 @@ export function ItemRow({
               )}
               onClick={() => onToggleOwned(item.id, !item.isOwned)}
               title={item.isOwned ? 'Ya lo tengo' : 'Marcar como poseido'}
+              aria-label={item.isOwned ? 'Quitar de en casa' : 'Marcar en casa'}
             >
               <ShoppingBag className="h-4 w-4" />
             </Button>
@@ -183,6 +186,7 @@ export function ItemRow({
             size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-destructive"
             onClick={() => onDelete(item.id)}
+            aria-label="Eliminar producto"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

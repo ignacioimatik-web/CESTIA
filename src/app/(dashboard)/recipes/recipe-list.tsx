@@ -1,11 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Search, SlidersHorizontal, X, Plus, CookingPot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Select,
@@ -32,7 +31,6 @@ type Props = {
 }
 
 export function RecipeList({ initialRecipes, initialTotal }: Props) {
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   const [search, setSearch] = useState(searchParams.get('search') ?? '')

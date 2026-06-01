@@ -19,7 +19,6 @@ interface ShoppingListCardProps {
 }
 
 export function ShoppingListCard({
-  id,
   name,
   supermarket,
   totalItems,

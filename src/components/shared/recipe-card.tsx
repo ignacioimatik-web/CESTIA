@@ -34,7 +34,6 @@ export function RecipeCard({
   difficulty,
   ingredientCount,
   category,
-  tags,
   className,
 }: RecipeCardProps) {
   return (
