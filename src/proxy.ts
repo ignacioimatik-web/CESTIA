@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 const protectedPaths = ['/dashboard', '/recipes', '/shopping-lists', '/household', '/settings']
 const authPaths = ['/login', '/register']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
