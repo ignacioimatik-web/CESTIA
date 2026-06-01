@@ -20,26 +20,54 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resending, setResending] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+
+  const normalizedEmail = email.trim().toLowerCase()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: normalizedEmail,
       password,
     })
 
     if (error) {
-      toast.error(error.message)
+      if (error.message.toLowerCase().includes('invalid login credentials')) {
+        toast.error('Email o contrasena incorrectos. Si te acabas de registrar, confirma primero tu email.')
+      } else {
+        toast.error(error.message)
+      }
       setLoading(false)
       return
     }
 
     router.push('/dashboard')
     router.refresh()
+  }
+
+  const handleResendConfirmation = async () => {
+    if (!normalizedEmail) {
+      toast.error('Escribe tu email primero')
+      return
+    }
+
+    setResending(true)
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: normalizedEmail,
+    })
+    setResending(false)
+
+    if (error) {
+      toast.error(error.message)
+      return
+    }
+
+    toast.success('Te hemos reenviado el email de confirmacion')
   }
 
   return (
@@ -87,6 +115,14 @@ export default function LoginPage() {
             Regístrate
           </Link>
         </p>
+        <button
+          type="button"
+          onClick={handleResendConfirmation}
+          disabled={resending}
+          className="mt-2 w-full text-center text-sm text-primary hover:underline disabled:opacity-60"
+        >
+          {resending ? 'Reenviando...' : 'Reenviar email de confirmacion'}
+        </button>
       </CardContent>
     </Card>
   )

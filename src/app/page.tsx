@@ -59,6 +59,9 @@ export default function Home() {
             por secciones de supermercado. Ahorra tiempo, evita olvidos y compra solo lo necesario.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
+            <Link href="/dashboard">
+              <Button size="lg" variant="secondary">Acceso provisional a la plataforma</Button>
+            </Link>
             <Link href="/register">
               <Button size="lg">Comenzar gratis</Button>
             </Link>
