@@ -42,6 +42,19 @@ export default function RootLayout({
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
+        <div className="app-video-bg" aria-hidden="true">
+          <video
+            className="app-video-bg__media"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+          >
+            <source src="/video/supermarket-modern.mp4" type="video/mp4" />
+          </video>
+          <div className="app-video-bg__veil" />
+        </div>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
