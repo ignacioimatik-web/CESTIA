@@ -22,7 +22,36 @@ export default async function DashboardPage() {
   const user = auth.user
 
   if (!user) {
-    return null
+    return (
+      <div className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto py-6 sm:py-8 space-y-6">
+        <Card className="warm-panel">
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2 text-primary mb-1">
+                  <Sparkles className="h-4 w-4" />
+                  <span className="text-xs font-semibold uppercase tracking-wider">Panel</span>
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Bienvenido</h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Para ver tus listas, recetas y progreso, entra con tu cuenta.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Link href="/login"><Button className="h-11 rounded-xl">Entrar</Button></Link>
+                <Link href="/register"><Button variant="outline" className="h-11 rounded-xl">Crear cuenta</Button></Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Card className="warm-panel"><CardContent className="p-4"><p className="text-sm font-semibold">Proximas listas de compra</p><p className="text-xs text-muted-foreground mt-1">Inicia sesion para verlas.</p></CardContent></Card>
+          <Card className="warm-panel"><CardContent className="p-4"><p className="text-sm font-semibold">Recetas recientes</p><p className="text-xs text-muted-foreground mt-1">Inicia sesion para verlas.</p></CardContent></Card>
+          <Card className="warm-panel"><CardContent className="p-4"><p className="text-sm font-semibold">Recetas recomendadas</p><p className="text-xs text-muted-foreground mt-1">Inicia sesion para verlas.</p></CardContent></Card>
+        </div>
+      </div>
+    )
   }
 
   const { data: member } = await supabase
