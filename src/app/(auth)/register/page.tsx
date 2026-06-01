@@ -1,0 +1,126 @@
+'use client'
+
+import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { toast } from 'sonner'
+
+export default function RegisterPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const supabase = createClient()
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name },
+      },
+    })
+
+    if (authError) {
+      toast.error(authError.message)
+      setLoading(false)
+      return
+    }
+
+    if (authData.user) {
+      const { error: householdError } = await supabase.from('households').insert({
+        name: `Hogar de ${name}`,
+        adults: 2,
+        children: 0,
+        dietary_preferences: ['none'],
+        favorite_supermarket: 'mercadona',
+      })
+
+      if (householdError) {
+        toast.error('Error al crear el hogar')
+        setLoading(false)
+        return
+      }
+
+      toast.success('Cuenta creada. Bienvenido a Cesta Inteligente!')
+      router.push('/login')
+    }
+
+    setLoading(false)
+  }
+
+  return (
+    <Card>
+      <CardHeader className="text-center">
+        <Link href="/" className="text-2xl mb-2 inline-block">
+          🛒
+        </Link>
+        <CardTitle className="text-2xl">Crear cuenta</CardTitle>
+        <CardDescription>
+          Crea tu hogar y empieza a organizar tus compras
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleRegister} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Nombre del hogar</Label>
+            <Input
+              id="name"
+              placeholder="Ej: Hogar de Ana"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="tu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Contraseña</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+            />
+          </div>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? 'Creando...' : 'Crear cuenta'}
+          </Button>
+        </form>
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          ¿Ya tienes cuenta?{' '}
+          <Link href="/login" className="text-primary hover:underline">
+            Inicia sesión
+          </Link>
+        </p>
+      </CardContent>
+    </Card>
+  )
+}
