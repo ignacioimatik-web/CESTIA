@@ -270,4 +270,42 @@ begin
     join ingredients i on i.name = tri.ingredient_name
     where tri.recipe_key = r.key;
   end loop;
+
+  -- Assign food images to recipes
+  update public.recipes set image_url = 'https://foodish-api.com/images/burger/burger33.jpg' where name = 'Salmon al horno con brocoli';
+  update public.recipes set image_url = 'https://foodish-api.com/images/idly/idly28.jpg' where name = 'Crema de calabacin ligera';
+  update public.recipes set image_url = 'https://foodish-api.com/images/dosa/dosa70.jpg' where name = 'Pollo a la plancha con arroz';
+  update public.recipes set image_url = 'https://foodish-api.com/images/burger/burger71.jpg' where name = 'Tortilla de atun y espinacas';
+  update public.recipes set image_url = 'https://foodish-api.com/images/pasta/pasta27.jpg' where name = 'Pavo salteado con verduras';
+  update public.recipes set image_url = 'https://foodish-api.com/images/biryani/biryani50.jpg' where name = 'Lentejas guisadas familiares';
+  update public.recipes set image_url = 'https://foodish-api.com/images/rice/rice34.jpg' where name = 'Macarrones boloñesa casera';
+  update public.recipes set image_url = 'https://foodish-api.com/images/dosa/dosa74.jpg' where name = 'Pollo al horno con patatas';
+  update public.recipes set image_url = 'https://foodish-api.com/images/butter-chicken/butter-chicken22.jpg' where name = 'Arroz a la cubana rapido';
+  update public.recipes set image_url = 'https://foodish-api.com/images/rice/rice25.jpg' where name = 'Sopa de fideos con pollo';
+  update public.recipes set image_url = 'https://foodish-api.com/images/samosa/samosa16.jpg' where name = 'Tortilla de patatas clasica';
+  update public.recipes set image_url = 'https://foodish-api.com/images/burger/burger12.jpg' where name = 'Cocido rapido de garbanzos';
+  update public.recipes set image_url = 'https://foodish-api.com/images/burger/burger69.jpg' where name = 'Albondigas en salsa de tomate';
+  update public.recipes set image_url = 'https://foodish-api.com/images/dessert/dessert11.jpg' where name = 'Arroz con leche casero';
+  update public.recipes set image_url = 'https://foodish-api.com/images/dessert/dessert27.jpg' where name = 'Curry de garbanzos y calabaza';
+  update public.recipes set image_url = 'https://foodish-api.com/images/idly/idly52.jpg' where name = 'Chili vegano de alubias';
+  update public.recipes set image_url = 'https://foodish-api.com/images/pasta/pasta7.jpg' where name = 'Pasta integral con verduras';
+  update public.recipes set image_url = 'https://foodish-api.com/images/pizza/pizza74.jpg' where name = 'Lasaña de verduras sencilla';
+  update public.recipes set image_url = 'https://foodish-api.com/images/pizza/pizza81.jpg' where name = 'Revuelto de champiñones';
+  update public.recipes set image_url = 'https://foodish-api.com/images/pasta/pasta13.jpg' where name = 'Bowl de quinoa y pollo';
+  update public.recipes set image_url = 'https://foodish-api.com/images/burger/burger41.jpg' where name = 'Avena overnight con plátano';
+  update public.recipes set image_url = 'https://foodish-api.com/images/rice/rice1.jpg' where name = 'Merluza con patata cocida';
+  update public.recipes set image_url = 'https://foodish-api.com/images/dosa/dosa2.jpg' where name = 'Ensalada de garbanzos mediterranea';
+  update public.recipes set image_url = 'https://foodish-api.com/images/pasta/pasta20.jpg' where name = 'Crema de lentejas rojas';
+  update public.recipes set image_url = 'https://foodish-api.com/images/dosa/dosa60.jpg' where name = 'Merluza al papillote';
+  update public.recipes set image_url = 'https://foodish-api.com/images/pizza/pizza28.jpg' where name = 'Ensalada de pollo y yogur';
+  update public.recipes set image_url = 'https://foodish-api.com/images/pasta/pasta22.jpg' where name = 'Nuggets de pollo caseros';
+  update public.recipes set image_url = 'https://foodish-api.com/images/pasta/pasta28.jpg' where name = 'Pure de patata y zanahoria';
+  update public.recipes set image_url = 'https://foodish-api.com/images/dessert/dessert33.jpg' where name = 'Mini pizzas de pan de molde';
+  update public.recipes set image_url = 'https://foodish-api.com/images/biryani/biryani12.jpg' where name = 'Quesadillas de pollo y queso';
+  update public.recipes set image_url = 'https://foodish-api.com/images/burger/burger31.jpg' where name = 'Tortilla francesa con espinacas';
+  update public.recipes set image_url = 'https://foodish-api.com/images/biryani/biryani78.jpg' where name = 'Salteado de gambas al ajo';
+  update public.recipes set image_url = 'https://foodish-api.com/images/rice/rice29.jpg' where name = 'Pollo desmechado para la semana';
+  update public.recipes set image_url = 'https://foodish-api.com/images/samosa/samosa10.jpg' where name = 'Arroz integral base semanal';
+  update public.recipes set image_url = 'https://foodish-api.com/images/idly/idly18.jpg' where name = 'Verduras asadas de bandeja';
+  update public.recipes set image_url = 'https://foodish-api.com/images/butter-chicken/butter-chicken7.jpg' where name = 'Garbanzos salteados con espinacas';
 end $$;

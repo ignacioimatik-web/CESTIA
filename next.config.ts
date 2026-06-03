@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "prod-mercadona.imgix.net",
       },
+      {
+        protocol: "https",
+        hostname: "foodish-api.com",
+      },
     ],
   },
   experimental: {
