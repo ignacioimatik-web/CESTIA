@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Search, ChevronDown, ChevronRight } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
-import { AddToListDialog } from '@/app/(dashboard)/catalog/add-to-list-dialog'
+import { AddToListDialog } from '@/components/catalog/add-to-list-dialog'
 import { inferSubcategory } from '@/lib/catalog/subcategories'
 
 type Product = {

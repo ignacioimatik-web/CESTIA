@@ -4,35 +4,17 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { DashboardHero } from '@/components/dashboard/dashboard-hero'
 import { ShoppingEnginePanel } from '@/components/dashboard/shopping-engine-panel'
-import { HouseholdSummaryCard } from '@/components/dashboard/household-summary-card'
-import { FeaturedRecipes } from '@/components/dashboard/featured-recipes'
 import { ActiveShoppingListCard } from '@/components/dashboard/active-shopping-list-card'
 import { SupermarketSectionsGrid } from '@/components/dashboard/supermarket-sections-grid'
-import { SuggestedProductsPanel } from '@/components/dashboard/suggested-products-panel'
-import { QuickEventsPanel } from '@/components/dashboard/quick-events-panel'
-import { SmartTemplatesPanel } from '@/components/dashboard/smart-templates-panel'
-import { CatalogStatusCard } from '@/components/dashboard/catalog-status-card'
-import { getHouseholdMode, getPendingProducts, getServingsMultiplier } from '@/components/dashboard/helpers'
-import type { ActiveListSummary, CatalogStatus, RecipeCardItem, SectionStat, SuggestedProduct } from '@/components/dashboard/types'
+import { FeaturedRecipes } from '@/components/dashboard/featured-recipes'
+import { getPendingProducts, getHouseholdMode, getServingsMultiplier } from '@/components/dashboard/helpers'
+import type { ActiveListSummary, RecipeCardItem, SectionStat } from '@/components/dashboard/types'
 
 const sectionNames = [
-  'Fruta y verdura',
-  'Carne',
-  'Pescado',
-  'Charcutería',
-  'Lácteos y huevos',
-  'Panadería',
-  'Pasta, arroz y legumbres',
-  'Conservas',
-  'Aceite, especias y salsas',
-  'Desayuno y dulces',
-  'Congelados',
-  'Bebidas',
-  'Limpieza',
-  'Higiene y perfumería',
-  'Bebé',
-  'Mascotas',
-  'Otros',
+  'Fruta y verdura', 'Carne', 'Pescado', 'Charcutería',
+  'Lácteos y huevos', 'Panadería', 'Pasta, arroz y legumbres', 'Conservas',
+  'Aceite, especias y salsas', 'Desayuno y dulces', 'Congelados', 'Bebidas',
+  'Limpieza', 'Higiene y perfumería', 'Bebé', 'Mascotas', 'Otros',
 ]
 
 function normalizeSection(value: string | null | undefined): string {
@@ -71,14 +53,8 @@ type ListItemRow = {
   is_checked: boolean
   quantity: number
   matched_product: {
-    id: string
-    name: string
-    brand: string | null
-    price: number | null
-    unit: string
-    quantity: number | null
-    image_url: string | null
-    supermarket_section: string | null
+    id: string; name: string; brand: string | null; price: number | null
+    unit: string; quantity: number | null; image_url: string | null; supermarket_section: string | null
   } | null
 }
 
@@ -133,11 +109,6 @@ export default async function DashboardPage() {
   }, 0)
   const estimatedCost = estimatedCostRaw > 0 ? estimatedCostRaw : null
 
-  const sectionSummaryMap = new Map<string, number>()
-  for (const item of activeListItems) {
-    const key = normalizeSection(item.section)
-    sectionSummaryMap.set(key, (sectionSummaryMap.get(key) ?? 0) + 1)
-  }
   const activeListSummary: ActiveListSummary | null = activeListMeta ? {
     id: activeListMeta.id,
     name: activeListMeta.name,
@@ -145,11 +116,9 @@ export default async function DashboardPage() {
     totalItems: activeListItems.length,
     pendingItems,
     checkedItems,
-    sections: Array.from(sectionSummaryMap.entries()).map(([name, count]) => ({ name, count })),
+    sections: [],
     previewItems: activeListItems.slice(0, 4).map((item) => ({
-      name: item.name,
-      section: item.section,
-      imageUrl: item.matched_product?.image_url ?? null,
+      name: item.name, section: item.section, imageUrl: item.matched_product?.image_url ?? null,
     })),
   } : null
 
@@ -196,45 +165,14 @@ export default async function DashboardPage() {
     }
   })
 
-  const suggestedProducts: SuggestedProduct[] = activeListItems
-    .filter((i) => i.matched_product)
-    .slice(0, 6)
-    .map((i) => {
-      const p = i.matched_product!
-      return {
-        id: p.id,
-        name: p.name,
-        brand: p.brand,
-        format: `${p.quantity ?? ''} ${p.unit}`.trim(),
-        price: p.price,
-        pricePerUnit: p.price && p.quantity ? Number((p.price / p.quantity).toFixed(2)) : null,
-        section: p.supermarket_section ?? null,
-        ingredientName: i.name,
-        imageUrl: p.image_url,
-      }
-    })
-
-  const catalogImagesCount = sections.reduce((sum, s) => sum + (s.imageUrl ? 1 : 0), 0)
-  const catalogStatus: CatalogStatus = {
-    supermarketName: activeMarket?.display_name ?? null,
-    state: activeMarket ? ((productRows?.length ?? 0) > 0 ? 'conectado' : 'pendiente') : 'error',
-    lastSync: activeMarket?.last_synced_at ?? null,
-    productCount: productRows?.length ?? 0,
-    categoryCount: sections.filter((s) => s.productCount > 0).length,
-    imagesCount: catalogImagesCount,
-    canSync: membership?.role === 'admin' || process.env.NODE_ENV !== 'production',
-  }
-
   const householdSummary = household ? {
-    adults: household.adults,
-    children: household.young_children,
-    guests: household.frequent_guests,
+    adults: household.adults, children: household.young_children, guests: household.frequent_guests,
     mode: getHouseholdMode(household.adults, household.young_children, household.frequent_guests),
     multiplier: getServingsMultiplier(household.adults, household.young_children, household.frequent_guests),
   } : null
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto py-6 space-y-5">
+    <div className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto py-6 space-y-6">
       <DashboardHero state={{
         supermarketActive: activeMarket?.display_name ?? null,
         householdActive: household?.name ?? null,
@@ -243,30 +181,23 @@ export default async function DashboardPage() {
         estimatedCost,
       }} />
 
-      <div>
-        <Link href="/shopping-lists/new" className="inline-flex">
-          <Button className="h-12 rounded-xl px-6 text-base">Crear lista</Button>
-        </Link>
-      </div>
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg sm:text-xl font-bold">Recetas destacadas</h2>
+          <Link href="/recipes" className="text-sm text-primary font-medium hover:underline">Ver todas</Link>
+        </div>
+        <FeaturedRecipes recipes={featuredRecipes} />
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <ShoppingEnginePanel />
         <ActiveShoppingListCard list={activeListSummary} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <HouseholdSummaryCard summary={householdSummary} />
-        <FeaturedRecipes recipes={featuredRecipes} />
-      </div>
-
-      <SupermarketSectionsGrid sections={sections} />
-
-      <QuickEventsPanel />
-      <SmartTemplatesPanel />
-
-      <CatalogStatusCard status={catalogStatus} />
-
-      <SuggestedProductsPanel products={suggestedProducts} />
+      <section>
+        <h2 className="text-lg sm:text-xl font-bold mb-3">Catalogo por secciones</h2>
+        <SupermarketSectionsGrid sections={sections} />
+      </section>
     </div>
   )
 }
