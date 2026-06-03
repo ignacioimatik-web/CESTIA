@@ -230,9 +230,15 @@ export class MercadonaProvider {
     const externalId = typeof raw.id === 'string' ? raw.id : String(raw.id ?? '')
 
     const priceInstructions = (raw.price_instructions ?? null) as Record<string, unknown> | null
-    const price = this.toNumber(priceInstructions?.unit_price)
-    const unitPrice = this.toNumber(priceInstructions?.bulk_price)
+    const unitPriceValue = this.toNumber(priceInstructions?.unit_price)
+    const bulkPrice = this.toNumber(priceInstructions?.bulk_price)
+    const referencePrice = this.toNumber(priceInstructions?.reference_price)
+    const price = unitPriceValue !== null && unitPriceValue < 200
+      ? unitPriceValue
+      : (bulkPrice ?? referencePrice ?? unitPriceValue)
+    const unitPrice = bulkPrice ?? referencePrice
     const unitSize = this.toNumber(priceInstructions?.unit_size)
+      ?? this.toNumber(priceInstructions?.min_bunch_amount)
     const sizeFormat = typeof priceInstructions?.size_format === 'string' ? priceInstructions.size_format : null
     const packageSize = unitSize !== null && sizeFormat ? `${unitSize} ${sizeFormat}` : null
 
@@ -266,18 +272,18 @@ export class MercadonaProvider {
     const name = categoryName.toLowerCase()
     if (name.includes('fruta') || name.includes('verdura')) return 'Fruta y verdura'
     if (name.includes('carn')) return 'Carne'
-    if (name.includes('pesc')) return 'Pescado'
+    if (name.includes('pesc') || name.includes('marisco')) return 'Pescado'
     if (name.includes('charcut')) return 'Charcutería'
-    if (name.includes('huevo') || name.includes('láct')) return 'Lácteos y huevos'
+    if (name.includes('huevo') || name.includes('láct') || name.includes('leche') || name.includes('yogur') || name.includes('postre')) return 'Lácteos y huevos'
     if (name.includes('pan')) return 'Panadería'
     if (name.includes('pasta') || name.includes('arroz') || name.includes('legumbre')) return 'Pasta, arroz y legumbres'
-    if (name.includes('conserv')) return 'Conservas'
+    if (name.includes('conserv') || name.includes('caldo') || name.includes('crema')) return 'Conservas'
     if (name.includes('aceite') || name.includes('especia') || name.includes('salsa')) return 'Aceite, especias y salsas'
-    if (name.includes('desayuno') || name.includes('dulce')) return 'Desayuno y dulces'
+    if (name.includes('desayuno') || name.includes('dulce') || name.includes('cereal') || name.includes('galleta') || name.includes('cacao') || name.includes('café') || name.includes('azúcar') || name.includes('chocolate')) return 'Desayuno y dulces'
     if (name.includes('congel')) return 'Congelados'
-    if (name.includes('bebida')) return 'Bebidas'
-    if (name.includes('limpieza')) return 'Limpieza'
-    if (name.includes('higiene') || name.includes('perfume')) return 'Higiene y perfumería'
+    if (name.includes('bebida') || name.includes('agua') || name.includes('refresco') || name.includes('zumo') || name.includes('bodega')) return 'Bebidas'
+    if (name.includes('limpieza') || name.includes('hogar')) return 'Limpieza'
+    if (name.includes('higiene') || name.includes('perfume') || name.includes('cuidado') || name.includes('cabello') || name.includes('facial') || name.includes('corporal') || name.includes('maquillaje') || name.includes('parafarmacia')) return 'Higiene y perfumería'
     if (name.includes('bebé') || name.includes('bebe')) return 'Bebé'
     if (name.includes('mascota')) return 'Mascotas'
     return 'Otros'
