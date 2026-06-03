@@ -16,9 +16,53 @@ import { getHouseholdMode, getPendingProducts, getServingsMultiplier } from '@/c
 import type { ActiveListSummary, CatalogStatus, RecipeCardItem, SectionStat, SuggestedProduct } from '@/components/dashboard/types'
 
 const sectionNames = [
-  'Fruta y verdura', 'Carne', 'Pescado', 'Charcuteria', 'Lacteos y huevos', 'Panaderia', 'Pasta, arroz y legumbres', 'Conservas',
-  'Aceite, especias y salsas', 'Desayuno y dulces', 'Congelados', 'Bebidas', 'Limpieza', 'Higiene y perfumeria', 'Bebe', 'Mascotas',
+  'Fruta y verdura',
+  'Carne',
+  'Pescado',
+  'Charcutería',
+  'Lácteos y huevos',
+  'Panadería',
+  'Pasta, arroz y legumbres',
+  'Conservas',
+  'Aceite, especias y salsas',
+  'Desayuno y dulces',
+  'Congelados',
+  'Bebidas',
+  'Limpieza',
+  'Higiene y perfumería',
+  'Bebé',
+  'Mascotas',
+  'Otros',
 ]
+
+function normalizeSection(value: string | null | undefined): string {
+  const raw = (value ?? 'Otros')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+  const known: Record<string, string> = {
+    'fruta y verdura': 'Fruta y verdura',
+    carne: 'Carne',
+    pescado: 'Pescado',
+    charcuteria: 'Charcutería',
+    'charcuteria y quesos': 'Charcutería',
+    'lacteos y huevos': 'Lácteos y huevos',
+    panaderia: 'Panadería',
+    'pasta, arroz y legumbres': 'Pasta, arroz y legumbres',
+    conservas: 'Conservas',
+    'aceite, especias y salsas': 'Aceite, especias y salsas',
+    'desayuno y dulces': 'Desayuno y dulces',
+    congelados: 'Congelados',
+    bebidas: 'Bebidas',
+    limpieza: 'Limpieza',
+    'higiene y perfumeria': 'Higiene y perfumería',
+    bebe: 'Bebé',
+    mascotas: 'Mascotas',
+    otros: 'Otros',
+  }
+  return known[raw] ?? 'Otros'
+}
 
 type ListItemRow = {
   shopping_list_id: string
@@ -91,7 +135,7 @@ export default async function DashboardPage() {
 
   const sectionSummaryMap = new Map<string, number>()
   for (const item of activeListItems) {
-    const key = item.section ?? 'Otros'
+    const key = normalizeSection(item.section)
     sectionSummaryMap.set(key, (sectionSummaryMap.get(key) ?? 0) + 1)
   }
   const activeListSummary: ActiveListSummary | null = activeListMeta ? {
@@ -134,7 +178,7 @@ export default async function DashboardPage() {
     ? await supabase.from('supermarket_products').select('supermarket_section').eq('supermarket_id', activeMarket.id)
     : { data: [] }
   for (const p of productCounts ?? []) {
-    const key = p.supermarket_section ?? 'Otros'
+    const key = normalizeSection(p.supermarket_section)
     sectionCatalogMap.set(key, (sectionCatalogMap.get(key) ?? 0) + 1)
   }
 
@@ -142,7 +186,7 @@ export default async function DashboardPage() {
     key: `${idx}`,
     name,
     productCount: sectionCatalogMap.get(name) ?? 0,
-    pendingCount: activeListItems.filter((i) => !i.is_checked && (i.section ?? 'Otros') === name).length,
+    pendingCount: activeListItems.filter((i) => !i.is_checked && normalizeSection(i.section) === name).length,
   }))
 
   const suggestedProducts: SuggestedProduct[] = activeListItems

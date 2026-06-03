@@ -15,6 +15,7 @@ function getSectionIcon(section: string) {
 
 export function SupermarketSectionCard({ section }: { section: SectionStat }) {
   const icon = getSectionIcon(section.name)
+  const href = `/catalog?section=${encodeURIComponent(section.name)}`
   return (
     <Card className="warm-panel">
       <CardContent className="p-3 space-y-1">
@@ -24,7 +25,7 @@ export function SupermarketSectionCard({ section }: { section: SectionStat }) {
         <p className="font-medium text-sm leading-tight">{section.name}</p>
         <p className="text-[11px] text-muted-foreground">Catalogo: {section.productCount}</p>
         <p className="text-[11px] text-muted-foreground">Pendientes: {section.pendingCount}</p>
-        <Link href="/shopping-lists" className="text-xs text-primary font-medium">Ver seccion</Link>
+        <Link href={href} className="text-xs text-primary font-medium">Ver seccion</Link>
       </CardContent>
     </Card>
   )
