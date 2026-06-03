@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/server'
+import { CatalogClientView } from './catalog-client'
 
 type CatalogPageProps = {
   searchParams: Promise<{ section?: string }>
@@ -114,24 +115,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {products.map((product) => (
-            <Card key={product.id} className="warm-panel overflow-hidden">
-              <CardContent className="p-3 space-y-2">
-                {product.image_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={product.image_url} alt={product.name} className="w-full aspect-square object-cover rounded-lg bg-muted" />
-                ) : (
-                  <div className="w-full aspect-square rounded-lg bg-muted" />
-                )}
-                <p className="text-sm font-medium leading-tight">{product.name}</p>
-                <p className="text-xs text-muted-foreground">{product.brand ?? 'Mercadona'}</p>
-                <p className="text-xs text-muted-foreground">{product.package_size ?? 'Formato no disponible'}</p>
-                <p className="text-sm font-semibold">{product.price !== null ? `${product.price.toFixed(2)} EUR` : 'Precio no disponible'}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <CatalogClientView products={products} section={section} />
       )}
     </div>
   )

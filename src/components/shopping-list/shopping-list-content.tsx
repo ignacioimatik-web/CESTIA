@@ -11,6 +11,7 @@ import { EmptyState } from '@/components/shared/empty-state'
 import { FadeIn, StaggerList, StaggerItem, AnimatePresence, motion } from '@/components/shared/animations'
 import { ItemRow } from './item-row'
 import { ExportActions } from './export-actions'
+import { AiRecipeButton } from './ai-recipe-button'
 import {
   getShoppingList,
   updateShoppingList,
@@ -244,6 +245,7 @@ export function ShoppingListContent({ id }: { id: string }) {
             </p>
           </div>
           <div className="flex items-center gap-1.5">
+            <AiRecipeButton listName={data.name} items={data.items} />
             <Button
               variant={checklistMode ? 'default' : 'outline'}
               size="sm"

@@ -490,3 +490,48 @@ export async function getRecipesForList() {
     createdBy: r.created_by,
   }))
 }
+
+export async function getUserShoppingLists() {
+  const supabase = await createClient()
+  const { data: lists } = await supabase
+    .from('shopping_lists')
+    .select('id, name, is_completed')
+    .order('created_at', { ascending: false })
+    .limit(20)
+  return (lists ?? []).filter((l) => !l.is_completed).map((l) => ({ id: l.id, name: l.name }))
+}
+
+export async function addProductToList(
+  shoppingListId: string,
+  product: { name: string; section: string | null; imageUrl: string | null }
+) {
+  const supabase = await createClient()
+
+  const { data: items } = await supabase
+    .from('shopping_list_items')
+    .select('sort_order')
+    .eq('shopping_list_id', shoppingListId)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+
+  const nextSort = (items?.[0]?.sort_order ?? -1) + 1
+
+  const { error } = await supabase
+    .from('shopping_list_items')
+    .insert({
+      shopping_list_id: shoppingListId,
+      name: product.name,
+      quantity: 1,
+      unit: 'ud',
+      section: product.section ?? null,
+      sort_order: nextSort,
+      product_id: null,
+      recipe_id: null,
+      notes: null,
+      is_checked: false,
+      is_owned: false,
+    } as never)
+
+  if (error) throw new Error(error.message)
+  revalidatePath(`/shopping-lists/${shoppingListId}`)
+}
