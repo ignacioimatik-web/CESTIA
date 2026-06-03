@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "foodish-api.com",
       },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+      },
+      {
+        protocol: "https",
+        hostname: "c.pxhere.com",
+      },
+      {
+        protocol: "https",
+        hostname: "pixnio.com",
+      },
     ],
   },
   experimental: {
