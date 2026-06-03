@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Image from 'next/image'
-import { Search, ChevronDown, ChevronRight } from 'lucide-react'
+import { Search, ChevronDown } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { AddToListDialog } from '@/components/catalog/add-to-list-dialog'
@@ -29,7 +29,6 @@ export function CatalogClientView({ products, section }: { products: Product[]; 
       if (!map.has(sub)) map.set(sub, [])
       map.get(sub)!.push(p)
     }
-    // Sort groups by name, "Otros" last
     return Array.from(map.entries()).sort((a, b) => {
       if (a[0] === 'Otros') return 1
       if (b[0] === 'Otros') return -1
@@ -84,60 +83,80 @@ export function CatalogClientView({ products, section }: { products: Product[]; 
         </Card>
       ) : (
         <div className="space-y-6">
-          {filtered.map(([group, items]) => {
+          {filtered.map(([group, items], idx) => {
             const isCollapsed = collapsed.has(group)
             return (
               <section key={group}>
+                {/* Separator between groups */}
+                {idx > 0 && <hr className="border-border/40 mb-6" />}
+
+                {/* Group header */}
                 <button
                   type="button"
                   onClick={() => toggleGroup(group)}
-                  className="flex items-center gap-1.5 text-sm font-semibold text-foreground mb-2 hover:text-primary transition-colors"
+                  className="w-full flex items-center justify-between gap-2 px-4 py-3 rounded-xl bg-muted/30 hover:bg-accent/50 transition-colors group/header"
                 >
-                  {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                  {group}
-                  <span className="text-xs text-muted-foreground font-normal ml-1">({items.length})</span>
+                  <div className="flex items-center gap-2.5">
+                    <ChevronDown
+                      className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isCollapsed ? '-rotate-90' : ''}`}
+                    />
+                    <span className="text-sm font-semibold text-foreground">{group}</span>
+                    <span className="text-xs text-muted-foreground font-normal bg-muted/50 px-2 py-0.5 rounded-full tabular-nums">
+                      {items.length}
+                    </span>
+                  </div>
                 </button>
 
-                {!isCollapsed && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5">
-                    {items.map((product) => (
-                      <Card key={product.id} className="warm-panel overflow-hidden group">
-                        <CardContent className="p-0">
-                          <div className="relative aspect-square bg-muted">
-                            {product.image_url ? (
-                              <Image
-                                src={product.image_url}
-                                alt={product.name}
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                              />
-                            ) : (
-                              <div className="flex h-full items-center justify-center">
-                                <svg className="h-10 w-10 text-muted-foreground/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                {/* Product grid with collapse animation */}
+                <div
+                  className={`grid transition-all duration-300 ease-in-out ${isCollapsed ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'}`}
+                >
+                  <div className="overflow-hidden min-h-0">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 pt-3">
+                      {items.map((product) => (
+                        <Card
+                          key={product.id}
+                          className="warm-panel overflow-hidden group/card hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+                        >
+                          <CardContent className="p-0">
+                            <div className="relative aspect-square bg-muted overflow-hidden">
+                              {product.image_url ? (
+                                <Image
+                                  src={product.image_url}
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover transition-transform duration-300 group-hover/card:scale-105"
+                                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                                />
+                              ) : (
+                                <div className="flex h-full items-center justify-center">
+                                  <svg className="h-10 w-10 text-muted-foreground/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                </div>
+                              )}
+                              <div className="absolute top-1.5 right-1.5 opacity-0 group-hover/card:opacity-100 transition-all duration-200 translate-x-1 group-hover/card:translate-x-0">
+                                <AddToListDialog
+                                  product={{ name: product.name, section: product.supermarket_section, imageUrl: product.image_url }}
+                                />
                               </div>
-                            )}
-                            <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <AddToListDialog
-                                product={{ name: product.name, section: product.supermarket_section, imageUrl: product.image_url }}
-                              />
                             </div>
-                          </div>
-                          <div className="p-2.5 space-y-1">
-                            <p className="text-sm font-medium leading-tight line-clamp-2">{product.name}</p>
-                            <p className="text-xs text-muted-foreground">{product.brand ?? ''}</p>
-                            {product.package_size && (
-                              <p className="text-xs text-muted-foreground">{product.package_size}</p>
-                            )}
-                            {product.price !== null && (
-                              <p className="text-sm font-semibold">{product.price.toFixed(2)} EUR</p>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                            <div className="p-2.5 space-y-1">
+                              <p className="text-sm font-medium leading-tight line-clamp-2">{product.name}</p>
+                              {product.brand && (
+                                <p className="text-xs text-muted-foreground">{product.brand}</p>
+                              )}
+                              {product.package_size && (
+                                <p className="text-xs text-muted-foreground">{product.package_size}</p>
+                              )}
+                              {product.price !== null && (
+                                <p className="text-sm font-semibold">{product.price.toFixed(2)} EUR</p>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
                   </div>
-                )}
+                </div>
               </section>
             )
           })}

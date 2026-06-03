@@ -63,3 +63,34 @@ export const LEGACY_TO_CANONICAL: Record<string, string> = {
   'Limpieza': 'Limpieza',
   'Higiene Personal': 'Higiene',
 }
+
+function pexel(id: number): string {
+  return `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop`
+}
+
+const PXHERE_CHARCUTERIA = 'https://c.pxhere.com/photos/6b/71/hams_majorca_spain_food_serrano_tapas_mallorca_butcher-1063779.jpg!d'
+const PIXNIO_CONSERVAS = 'https://pixnio.com/free-images/food-and-drink/five-cans-of-foods-including-tomato-paste-blackeye-peas-corn-and-green-beans.jpg'
+
+export const SECTION_IMAGES: Record<string, string> = {
+  'Fruta y verdura':          pexel(18212064),
+  'Carne':                    pexel(31732115),
+  'Pescado':                  pexel(19142282),
+  'Charcutería':              PXHERE_CHARCUTERIA,
+  'Lácteos y huevos':         pexel(20489330),
+  'Panadería':                pexel(20140442),
+  'Pasta, arroz y legumbres': pexel(410648),
+  'Conservas':                PIXNIO_CONSERVAS,
+  'Aceite, especias y salsas': pexel(4871148),
+  'Desayuno y dulces':        pexel(16950137),
+  'Congelados':               pexel(5498226),
+  'Bebidas':                  pexel(6346098),
+  'Limpieza':                 pexel(4492942),
+  'Higiene y perfumería':     pexel(16571729),
+  'Bebé':                     pexel(6592790),
+  'Mascotas':                 pexel(8248845),
+  'Otros':                    pexel(22624593),
+}
+
+export function getSectionImageUrl(label: string): string | undefined {
+  return SECTION_IMAGES[label]
+}

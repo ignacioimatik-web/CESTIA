@@ -8,6 +8,7 @@ import { ActiveShoppingListCard } from '@/components/dashboard/active-shopping-l
 import { SupermarketSectionsGrid } from '@/components/dashboard/supermarket-sections-grid'
 import { FeaturedRecipes } from '@/components/dashboard/featured-recipes'
 import { getPendingProducts, getHouseholdMode, getServingsMultiplier } from '@/components/dashboard/helpers'
+import { getSectionImageUrl } from '@/lib/constants/sections'
 import type { ActiveListSummary, RecipeCardItem, SectionStat } from '@/components/dashboard/types'
 
 const sectionNames = [
@@ -161,7 +162,7 @@ export default async function DashboardPage() {
       name,
       productCount: entry?.productCount ?? 0,
       pendingCount: activeListItems.filter((i) => !i.is_checked && normalizeSection(i.section) === name).length,
-      imageUrl: entry?.imageUrl ?? null,
+      imageUrl: getSectionImageUrl(name) ?? entry?.imageUrl ?? null,
     }
   })
 
