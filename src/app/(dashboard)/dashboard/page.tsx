@@ -173,21 +173,28 @@ export default async function DashboardPage() {
     ingredients: (ingredientByRecipe.get(r.id) ?? []).slice(0, 4),
   }))
 
-  const sectionCatalogMap = new Map<string, number>()
-  const { data: productCounts } = activeMarket
-    ? await supabase.from('supermarket_products').select('supermarket_section').eq('supermarket_id', activeMarket.id)
+  const sectionCatalogMap = new Map<string, { productCount: number; imageUrl: string | null }>()
+  const { data: productRows } = activeMarket
+    ? await supabase.from('supermarket_products').select('supermarket_section, image_url').eq('supermarket_id', activeMarket.id)
     : { data: [] }
-  for (const p of productCounts ?? []) {
+  for (const p of productRows ?? []) {
     const key = normalizeSection(p.supermarket_section)
-    sectionCatalogMap.set(key, (sectionCatalogMap.get(key) ?? 0) + 1)
+    const entry = sectionCatalogMap.get(key) ?? { productCount: 0, imageUrl: null }
+    entry.productCount++
+    if (!entry.imageUrl && p.image_url) entry.imageUrl = p.image_url
+    sectionCatalogMap.set(key, entry)
   }
 
-  const sections: SectionStat[] = sectionNames.map((name, idx) => ({
-    key: `${idx}`,
-    name,
-    productCount: sectionCatalogMap.get(name) ?? 0,
-    pendingCount: activeListItems.filter((i) => !i.is_checked && normalizeSection(i.section) === name).length,
-  }))
+  const sections: SectionStat[] = sectionNames.map((name, idx) => {
+    const entry = sectionCatalogMap.get(name)
+    return {
+      key: `${idx}`,
+      name,
+      productCount: entry?.productCount ?? 0,
+      pendingCount: activeListItems.filter((i) => !i.is_checked && normalizeSection(i.section) === name).length,
+      imageUrl: entry?.imageUrl ?? null,
+    }
+  })
 
   const suggestedProducts: SuggestedProduct[] = activeListItems
     .filter((i) => i.matched_product)
@@ -207,14 +214,14 @@ export default async function DashboardPage() {
       }
     })
 
-  const imagesCount = suggestedProducts.filter((p) => !!p.imageUrl).length
+  const catalogImagesCount = sections.reduce((sum, s) => sum + (s.imageUrl ? 1 : 0), 0)
   const catalogStatus: CatalogStatus = {
     supermarketName: activeMarket?.display_name ?? null,
-    state: activeMarket ? ((productCounts?.length ?? 0) > 0 ? 'conectado' : 'pendiente') : 'error',
+    state: activeMarket ? ((productRows?.length ?? 0) > 0 ? 'conectado' : 'pendiente') : 'error',
     lastSync: activeMarket?.last_synced_at ?? null,
-    productCount: productCounts?.length ?? 0,
+    productCount: productRows?.length ?? 0,
     categoryCount: sections.filter((s) => s.productCount > 0).length,
-    imagesCount,
+    imagesCount: catalogImagesCount,
     canSync: membership?.role === 'admin' || process.env.NODE_ENV !== 'production',
   }
 

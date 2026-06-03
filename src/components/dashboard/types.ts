@@ -41,6 +41,7 @@ export type SectionStat = {
   name: string
   productCount: number
   pendingCount: number
+  imageUrl: string | null
 }
 
 export type SuggestedProduct = {
