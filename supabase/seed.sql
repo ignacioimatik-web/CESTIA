@@ -145,6 +145,11 @@ begin
   order by created_at asc
   limit 1;
 
+  update households
+  set primary_supermarket_id = 'a0000000-0000-0000-0000-000000000001'
+  where id = v_household_id
+    and primary_supermarket_id is null;
+
   create temp table tmp_recipe_seed (
     key text,
     name text,
